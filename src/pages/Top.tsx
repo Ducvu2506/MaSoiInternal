@@ -43,8 +43,6 @@ const styles = (theme: Theme) =>
 class Top extends React.Component<WithStyles<typeof styles>, {}> {
   public render() {
     const { classes } = this.props;
-    console.log(this.props);
-    
     return (
       <div className={classes.root}>
         <div className={classes.nav}>

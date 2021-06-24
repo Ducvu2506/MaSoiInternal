@@ -76,8 +76,6 @@ class Night extends React.Component<AppProps, State> {
     const { classes, game } = this.props;
     const { activeStep } = this.state;
     let step = 0;
-    console.log(classes.stepLabel);
-    
 
     return (
       <div className={classes.root}>
