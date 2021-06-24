@@ -29,7 +29,7 @@ function GithubButton(props: Readonly<WithStyles<typeof styles>>) {
 
   return (
     <Button
-      href="https://github.com/nshun/react-werewolf"
+      href="https://github.com/Ducvu2506/MaSoiInternal"
       target="_blank"
       rel="noopener"
       value="Github repository"

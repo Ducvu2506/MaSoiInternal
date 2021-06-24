@@ -152,7 +152,7 @@ function vote(players: Player[], nextTime: Time) {
   );
 
   for (const player of players) {
-    if (player.role === Roles.doctor && player.actionId) {
+    if (player.role === Roles.witch && player.actionId) {
       protectedIds = [...protectedIds, player.actionId];
     }
   }

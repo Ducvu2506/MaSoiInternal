@@ -3,8 +3,14 @@ export interface Setting {
   villagers: number;
   werewolves: number;
   seers: number;
-  doctors: number;
+  witch: number;
+  hunter: number;
   interval: number;
+  cupid: number;
+  fairy : number;
+  protector: number;
+  whitewolves: number;
+  demonwolves: number;
 }
 
 export const UPDATE_SETTINGS = "UPDATE_SETTINGS";

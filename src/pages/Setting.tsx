@@ -30,6 +30,7 @@ import { updateSetting } from "../store/setting/actions";
 import { Setting } from "../store/setting/types";
 
 import withRoot from "../withRoot";
+import { ThreeSixtyOutlined } from "@material-ui/icons";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -63,15 +64,22 @@ interface State {
   players: number;
   werewolves: number;
   seers: number;
-  doctors: number;
+  witch: number;
+  hunter: number;
   interval: number;
+  cupid: number;
+  fairy: number;
+  protector: number;
+  whitewolves: number;
+  demonwolves: number;
 }
 
 class Index extends React.Component<AppProps, State> {
   constructor(props: Readonly<AppProps>) {
     super(props);
-
-    const { players, seers, doctors } = this.props.setting;
+    console.log(this.props);
+    
+    const { players, seers, witch, hunter , cupid , fairy, protector, whitewolves, demonwolves } = this.props.setting;
     this.state = {
       openName: false,
       openRole: false,
@@ -82,19 +90,31 @@ class Index extends React.Component<AppProps, State> {
         Math.floor(Number(this.props.setting.players) / 3)
       ),
       seers,
-      doctors,
+      witch,
+      hunter,
+      cupid,
+      fairy,
       interval: this.props.setting.interval,
+      protector,
+      whitewolves,
+      demonwolves,
     };
   }
   public updateSetting = () => {
-    const { players, werewolves, seers, doctors, interval } = this.state;
+    const { players, werewolves, seers, witch, interval, hunter , cupid, fairy, whitewolves, demonwolves, protector } = this.state;
     const newSetting: Setting = {
       players,
       villagers: this.calcRemains(1),
       werewolves,
       seers,
-      doctors,
+      witch,
       interval,
+      hunter,
+      cupid,
+      fairy,
+      whitewolves,
+      demonwolves,
+      protector
     };
     this.props.updateSetting(newSetting);
   };
@@ -103,9 +123,13 @@ class Index extends React.Component<AppProps, State> {
       this.calcRemains(1),
       this.state.werewolves,
       this.state.seers,
-      this.state.doctors,
+      this.state.witch,
+      this.state.demonwolves,
+      this.state.whitewolves,
     ]);
   public handleChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log(evt.target.name);
+    console.log(evt.target.value);
     switch (evt.target.name) {
       case "players":
         return this.setState({
@@ -114,6 +138,18 @@ class Index extends React.Component<AppProps, State> {
           players: Number(evt.target.value),
           werewolves: Math.max(1, Math.floor(Number(evt.target.value) / 3)),
         });
+      case "whitewolves":
+        return this.setState({
+          ...this.state,
+          werewolves: Number(evt.target.value) > this.state.whitewolves ?  this.state.werewolves - (Number(evt.target.value) - this.state.whitewolves) : this.state.werewolves + (this.state.whitewolves - Number(evt.target.value)),
+          whitewolves : Number(evt.target.value),
+        })
+      case "demonwolves":
+        return this.setState({
+          ...this.state,
+          werewolves: Number(evt.target.value) > this.state.demonwolves ?  this.state.werewolves - (Number(evt.target.value) - this.state.demonwolves) : this.state.werewolves + (this.state.demonwolves - Number(evt.target.value)),
+          demonwolves : Number(evt.target.value),
+        })
       default:
         return this.setState({
           ...this.state,
@@ -177,8 +213,8 @@ class Index extends React.Component<AppProps, State> {
   };
 
   public calcRemains = (current: number) => {
-    const { players, werewolves, seers, doctors } = this.state;
-    return players - werewolves - seers - doctors + current - 1;
+    const { players, werewolves, seers, witch, hunter , cupid , whitewolves, demonwolves, protector} = this.state;
+    return players - werewolves - seers - witch - cupid - hunter - whitewolves - demonwolves - protector + current - 1;
   };
 
   public RoleDialog = () => {
@@ -192,27 +228,47 @@ class Index extends React.Component<AppProps, State> {
               className={this.props.classes.formControl}
               disabled={true}
             >
-              <InputLabel>The Villagers</InputLabel>
+              <InputLabel>Dân làng</InputLabel>
               <Select name="villagers" value={villagers}>
                 <MenuItem value={villagers}>{villagers}</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl className={this.props.classes.formControl}>
+              <InputLabel>Thần tình yêu</InputLabel>
+              <Select
+                name="cupid"
+                value={this.state.cupid}
+                onChange={this.handleChange}
+              >
+                {NumberMenuItems(0, this.calcRemains(Number.isNaN(this.state.cupid) ? 0 : this.state.cupid))}
               </Select>
             </FormControl>
           </form>
           <form>
             <FormControl className={this.props.classes.formControl}>
-              <InputLabel style={{marginRight:'30'}}>The Werewolves</InputLabel>
+              <InputLabel>Ma Sói</InputLabel>
               <Select
                 name="werewolves"
                 value={this.state.werewolves}
                 onChange={this.handleChange}
               >
-                {NumberMenuItems(1, this.calcRemains(this.state.werewolves))}
+                {NumberMenuItems(0, this.calcRemains(Number.isNaN(this.state.werewolves) ? 0 : this.state.werewolves))}
+              </Select>
+            </FormControl>
+            <FormControl className={this.props.classes.formControl}>
+              <InputLabel>Thiên thần</InputLabel>
+              <Select
+                name="fairy"
+                value={this.state.fairy}
+                onChange={this.handleChange}
+              >
+                {NumberMenuItems(0, this.calcRemains(Number.isNaN(this.state.fairy) ? 0 : this.state.fairy))}
               </Select>
             </FormControl>
           </form>
           <form>
             <FormControl className={this.props.classes.formControl}>
-              <InputLabel>The Seers</InputLabel>
+              <InputLabel>Tiên tri</InputLabel>
               <Select
                 name="seers"
                 value={this.state.seers}
@@ -221,16 +277,58 @@ class Index extends React.Component<AppProps, State> {
                 {NumberMenuItems(0, this.calcRemains(this.state.seers))}
               </Select>
             </FormControl>
+            <FormControl className={this.props.classes.formControl}>
+              <InputLabel>Bảo vệ</InputLabel>
+              <Select
+                name="protector"
+                value={this.state.protector}
+                onChange={this.handleChange}
+              >
+                {NumberMenuItems(0, this.calcRemains(this.state.protector))}
+              </Select>
+            </FormControl>
           </form>
           <form>
             <FormControl className={this.props.classes.formControl}>
-              <InputLabel>The Doctors</InputLabel>
+              <InputLabel>Phù thuỷ</InputLabel>
               <Select
-                name="doctors"
-                value={this.state.doctors}
+                name="witch"
+                value={this.state.witch}
                 onChange={this.handleChange}
               >
-                {NumberMenuItems(0, this.calcRemains(this.state.doctors))}
+                {NumberMenuItems(0, this.calcRemains(this.state.witch))}
+              </Select>
+            </FormControl>
+            <FormControl className={this.props.classes.formControl}>
+              <InputLabel>Thợ săn</InputLabel>
+              <Select
+                name="hunters"
+                value={this.state.hunter}
+                onChange={this.handleChange}
+              >
+                {NumberMenuItems(0, this.calcRemains(Number.isNaN(this.state.hunter) ? 0 :this.state.hunter ))}
+              </Select>
+            </FormControl>
+          </form>
+          <form>
+            <FormControl className={this.props.classes.formControl}>
+              <InputLabel>Sói trùm</InputLabel>
+              <Select
+                name="demonwolves"
+                value={this.state.demonwolves}
+                onChange={this.handleChange}
+              >
+                {NumberMenuItems(0, this.calcRemains(this.state.demonwolves))}
+              </Select>
+            </FormControl>
+            <FormControl className={this.props.classes.formControl}>
+              <InputLabel>Sói trắng</InputLabel>
+              <Select
+                name="whitewolves"
+                value={this.state.whitewolves}
+                onChange={this.handleChange}
+              >
+                {NumberMenuItems(0, this.calcRemains(this.state.whitewolves))}
               </Select>
             </FormControl>
           </form>

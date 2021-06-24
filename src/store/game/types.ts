@@ -2,7 +2,12 @@ export enum Roles {
   villager,
   werewolf,
   seer,
-  doctor,
+  witch,
+  hunter,
+  whitewolves,
+  demonwolves,
+  protector,
+  cupid,
 }
 
 export enum Time {

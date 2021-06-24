@@ -48,6 +48,7 @@ class CountDownDialog extends React.Component<
 
   public handleOk = () => {
     persistor.purge();
+    localStorage.clear();
     this.handleClose();
   };
 
