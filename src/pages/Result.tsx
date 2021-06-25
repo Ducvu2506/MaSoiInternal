@@ -78,8 +78,10 @@ class Result extends React.Component<AppProps, {}> {
       } else {
         return (
           <Typography variant="h4" gutterBottom={true}>
-            {lastDiedPlayer
-              ? `${lastDiedPlayer.name} was killed`
+            {lastDiedPlayer.length > 0
+              ? `${lastDiedPlayer
+                  .map(player => player.name)
+                  .join(",")} was killed`
               : "No one died"}
           </Typography>
         );
@@ -91,7 +93,7 @@ class Result extends React.Component<AppProps, {}> {
         {winner ? (
           <Fab
             component={Link}
-            {...{ to: "/" } as any}
+            {...({ to: "/" } as any)}
             variant="extended"
             color="primary"
             size="large"
@@ -101,7 +103,7 @@ class Result extends React.Component<AppProps, {}> {
         ) : game.date.time === Time.night ? (
           <Fab
             component={Link}
-            {...{ to: "/night" } as any}
+            {...({ to: "/night" } as any)}
             variant="extended"
             color="primary"
             size="large"
@@ -111,7 +113,7 @@ class Result extends React.Component<AppProps, {}> {
         ) : (
           <Fab
             component={Link}
-            {...{ to: "/noon" } as any}
+            {...({ to: "/noon" } as any)}
             variant="extended"
             color="primary"
             size="large"

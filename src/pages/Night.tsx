@@ -22,7 +22,7 @@ const ActionDialog = lazy(() => import("../components/ActionDialog"));
 
 import { AppState } from "../store";
 import { tickTime } from "../store/game/actions";
-import { Game, Time } from "../store/game/types";
+import { Game, Roles, Time } from "../store/game/types";
 
 import withRoot from "../withRoot";
 
@@ -65,8 +65,8 @@ class Night extends React.Component<AppProps, State> {
     "whitewolves",
     "protector",
     "seer",
-    "hunter",
     "witch",
+    "hunter",
     "fairy",
     "villager",
   ];
@@ -109,6 +109,23 @@ class Night extends React.Component<AppProps, State> {
     let roles = game.players.map(x => {
       return x.role;
     });
+    const getPlayerOfRoles = (role: Roles) => {
+      if (role === Roles.werewolf) {
+        return this.props.game.players
+          .filter(
+            player =>
+              player.role === role ||
+              player.role === Roles.whitewolves ||
+              player.role === Roles.demonwolves
+          )
+          .map(player => player.name)
+          .join(", ");
+      }
+      return this.props.game.players
+        .filter(player => player.role === role)
+        .map(player => player.name)
+        .join(", ");
+    };
 
     roles = Array.from(new Set(roles)).sort();
     let step = 0;
@@ -139,11 +156,7 @@ class Night extends React.Component<AppProps, State> {
                   // tslint:disable-next-line: jsx-no-lambda
                   onClick={() => this.setActiveStep(thisStep)}
                 >
-                  {this.roleList[x]} -{" "}
-                  {this.props.game.players
-                    .filter(player => player.role === x)
-                    .map(player => player.name)
-                    .join(", ")}
+                  {this.roleList[x]} - {getPlayerOfRoles(x)}
                 </StepLabel>
                 <StepContent>
                   <div className={classes.content}>

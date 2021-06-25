@@ -1,3 +1,4 @@
+import ActionDialog from "../../components/ActionDialog";
 import shuffle from "../../utils/shuffle";
 import {
   ACTION_PLAYER,
@@ -48,6 +49,8 @@ export const initGame = (
             role: val,
             voteId: null,
             actionId: null,
+            hasPower: [],
+            isCupidSeleted: false,
           };
         }
       ),
@@ -57,7 +60,7 @@ export const initGame = (
       },
       state: {
         winner: null,
-        lastDiedPlayer: null,
+        lastDiedPlayer: [],
       },
     },
   };
@@ -141,10 +144,13 @@ function majority(ids: number[]) {
 }
 
 function vote(players: Player[], nextTime: Time) {
-  let lastDiedPlayer: Player | null = null;
+  let lastDiedPlayer: Player[] = [];
   let protectedIds: number[] = [];
   let bitten: number | null = null;
   let shooted: number | null = null;
+  players = players.sort((a, b) => a.role - b.role);
+  console.log(players);
+
   const changeWolf: boolean = false;
   const deathId = majority(
     players.map(player => (nextTime === Time.night ? player.voteId : -1) || -1)
@@ -154,6 +160,9 @@ function vote(players: Player[], nextTime: Time) {
 
   for (const player of players) {
     if (player.role === Roles.protector && player.actionId) {
+      const protectedPlayer = players.find(x => x.id === player.actionId);
+      player.hasPower = [protectedPlayer ? protectedPlayer.name : ""];
+      players = [...players.filter(p => p.id !== player.id), player];
       protectedIds = [...protectedIds, player.actionId];
     }
     if (player.role === Roles.werewolf && player.actionId) {
@@ -187,7 +196,31 @@ function vote(players: Player[], nextTime: Time) {
 
   const votedPlayers: Player[] = players.map(player => {
     if (player.id === deathId) {
-      lastDiedPlayer = player;
+      lastDiedPlayer = [...lastDiedPlayer, player];
+      return {
+        ...player,
+        alive: false,
+        actioned: false,
+        actionId: null,
+        voteId: null,
+      };
+    }
+    if (player.id === bitten) {
+      lastDiedPlayer = [...lastDiedPlayer, player];
+      if (player.role === Roles.hunter) {
+        let shootedPlayer = players.find(p => p.id === shooted);
+        if (shootedPlayer) {
+          lastDiedPlayer = [...lastDiedPlayer, shootedPlayer];
+          shootedPlayer = {
+            ...shootedPlayer,
+            alive: false,
+            actioned: false,
+            actionId: null,
+            voteId: null,
+          };
+          players = [...players.filter(p => p.id !== shooted), shootedPlayer];
+        }
+      }
       return {
         ...player,
         alive: false,
@@ -209,7 +242,23 @@ function vote(players: Player[], nextTime: Time) {
 function chkWinner(players: Player[]) {
   const alives = players.filter(player => player.alive);
   const werewoves = alives.filter(player => player.role === Roles.werewolf);
-  if (alives.length === werewoves.length) {
+  const demonwolves = alives.filter(
+    player => player.role === Roles.demonwolves
+  );
+  const cupid = alives.filter(player => player.isCupidSeleted);
+  const whitewolves = alives.filter(
+    player => player.role === Roles.whitewolves
+  );
+  if (cupid.length === 2) {
+    return Roles.cupid;
+  } else if (
+    werewoves.length === 0 &&
+    demonwolves.length === 0 &&
+    alives.length === 2 &&
+    whitewolves.length === 1
+  ) {
+    return Roles.whitewolves;
+  } else if (alives.length === werewoves.length + demonwolves.length) {
     return Roles.werewolf;
   } else if (werewoves.length === 0) {
     return Roles.villager;

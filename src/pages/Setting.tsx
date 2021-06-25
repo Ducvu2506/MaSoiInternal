@@ -162,8 +162,8 @@ class Index extends React.Component<AppProps, State> {
       this.state.whitewolves,
       this.state.protector,
       this.state.seers,
-      this.state.hunter,
       this.state.witch,
+      this.state.hunter,
       this.state.fairy,
       this.calcRemains(1),
     ]);
@@ -455,7 +455,7 @@ class Index extends React.Component<AppProps, State> {
               onChange={this.handleChange}
               onClose={this.handleOpenName}
             >
-              {NumberMenuItems(4, 12)}
+              {NumberMenuItems(4, 20)}
             </Select>
           </FormControl>
         </form>

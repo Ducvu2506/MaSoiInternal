@@ -24,6 +24,8 @@ const initState = (num: number): Game => {
         role: Roles.villager,
         voteId: null,
         actionId: null,
+        hasPower: [],
+        isCupidSeleted: false,
       };
     }),
     date: {
@@ -32,7 +34,7 @@ const initState = (num: number): Game => {
     },
     state: {
       winner: null,
-      lastDiedPlayer: null,
+      lastDiedPlayer: [],
     },
   };
 };

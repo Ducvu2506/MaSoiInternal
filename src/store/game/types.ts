@@ -5,11 +5,11 @@ export enum Roles {
   whitewolves,
   protector,
   seer,
-  hunter,
   witch,
+  hunter,
   fairy,
   villager,
-}
+} // sort by priority
 
 export enum Time {
   night,
@@ -24,6 +24,8 @@ export interface Player {
   role: Roles;
   voteId: number | null;
   actionId: number | null;
+  hasPower: string[];
+  isCupidSeleted: boolean;
 }
 
 export interface GameDate {
@@ -33,7 +35,7 @@ export interface GameDate {
 
 export interface GameState {
   winner: Roles | null;
-  lastDiedPlayer: Player | null;
+  lastDiedPlayer: Player[];
 }
 
 export interface Game {

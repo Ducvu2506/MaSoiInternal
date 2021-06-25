@@ -40,8 +40,8 @@ const roleList = [
   "whitewolves",
   "protector",
   "seer",
-  "hunter",
   "witch",
+  "hunter",
   "fairy",
   "villager",
 ];
@@ -135,6 +135,7 @@ class ActionDialog extends React.Component<Props, State> {
 
   public PlayerMenuItems = () => {
     const players = this.props.game.players;
+
     return (
       <div>
         {this.props.player.role === Roles.werewolf && (
@@ -154,15 +155,26 @@ class ActionDialog extends React.Component<Props, State> {
           onChange={this.handleChange}
           className={this.props.classes.select}
         >
-          {players
-            .filter(p => p.alive)
-            .map(p => {
-              return (
-                <MenuItem key={p.id} value={p.id}>
-                  {p.name}
-                </MenuItem>
-              );
-            })}
+          {this.props.player.role !== Roles.protector &&
+            players
+              .filter(p => p.alive)
+              .map(p => {
+                return (
+                  <MenuItem key={p.id} value={p.id}>
+                    {p.name}
+                  </MenuItem>
+                );
+              })}
+          {this.props.player.role === Roles.protector &&
+            players
+              .filter(p => p.alive && p.name !== this.props.player.hasPower[0])
+              .map(p => {
+                return (
+                  <MenuItem key={p.id} value={p.id}>
+                    {p.name}
+                  </MenuItem>
+                );
+              })}
         </Select>
       </div>
     );
