@@ -29,8 +29,8 @@ import { Game } from "../store/game/types";
 import { updateSetting } from "../store/setting/actions";
 import { Setting } from "../store/setting/types";
 
-import withRoot from "../withRoot";
 import { ThreeSixtyOutlined } from "@material-ui/icons";
+import withRoot from "../withRoot";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -74,12 +74,36 @@ interface State {
   demonwolves: number;
 }
 
+const voices = [
+  "Hỡi những con sói gian ác hãy tỉnh dậy đi",
+  "Cupid ơi tỉnh dậy đi đừng ngủ nữa",
+  "Cupid muốn ghép đôi ai với ai",
+  "Tiên tri ơi, dậy đi",
+  "Tiên tri muốn soi ai",
+  "Sói trùm ơi dậy đi, đừng ngủ nữa",
+  "Sói trùm muốn nhận người này làm sói không",
+  "Sói trắng ơi dậy đi",
+  "Đêm nay sói trắng muốn cắn con sói nào không",
+  "Phù thủy ơi dậy đi",
+  "Đêm nay người này bị chết, phù thủy muốn cứu không",
+  "",
+];
+
 class Index extends React.Component<AppProps, State> {
   constructor(props: Readonly<AppProps>) {
     super(props);
-    console.log(this.props);
-    
-    const { players, seers, witch, hunter , cupid , fairy, protector, whitewolves, demonwolves } = this.props.setting;
+
+    const {
+      players,
+      seers,
+      witch,
+      hunter,
+      cupid,
+      fairy,
+      protector,
+      whitewolves,
+      demonwolves,
+    } = this.props.setting;
     this.state = {
       openName: false,
       openRole: false,
@@ -101,7 +125,19 @@ class Index extends React.Component<AppProps, State> {
     };
   }
   public updateSetting = () => {
-    const { players, werewolves, seers, witch, interval, hunter , cupid, fairy, whitewolves, demonwolves, protector } = this.state;
+    const {
+      players,
+      werewolves,
+      seers,
+      witch,
+      interval,
+      hunter,
+      cupid,
+      fairy,
+      whitewolves,
+      demonwolves,
+      protector,
+    } = this.state;
     const newSetting: Setting = {
       players,
       villagers: this.calcRemains(1),
@@ -114,22 +150,25 @@ class Index extends React.Component<AppProps, State> {
       fairy,
       whitewolves,
       demonwolves,
-      protector
+      protector,
     };
     this.props.updateSetting(newSetting);
   };
-  public initGame = () =>
+  public initGame = () => {
     this.props.initGame(this.state.names, [
-      this.calcRemains(1),
+      this.state.cupid,
       this.state.werewolves,
-      this.state.seers,
-      this.state.witch,
       this.state.demonwolves,
       this.state.whitewolves,
+      this.state.protector,
+      this.state.seers,
+      this.state.hunter,
+      this.state.witch,
+      this.state.fairy,
+      this.calcRemains(1),
     ]);
+  };
   public handleChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(evt.target.name);
-    console.log(evt.target.value);
     switch (evt.target.name) {
       case "players":
         return this.setState({
@@ -141,15 +180,25 @@ class Index extends React.Component<AppProps, State> {
       case "whitewolves":
         return this.setState({
           ...this.state,
-          werewolves: Number(evt.target.value) > this.state.whitewolves ?  this.state.werewolves - (Number(evt.target.value) - this.state.whitewolves) : this.state.werewolves + (this.state.whitewolves - Number(evt.target.value)),
-          whitewolves : Number(evt.target.value),
-        })
+          werewolves:
+            Number(evt.target.value) > this.state.whitewolves
+              ? this.state.werewolves -
+                (Number(evt.target.value) - this.state.whitewolves)
+              : this.state.werewolves +
+                (this.state.whitewolves - Number(evt.target.value)),
+          whitewolves: Number(evt.target.value),
+        });
       case "demonwolves":
         return this.setState({
           ...this.state,
-          werewolves: Number(evt.target.value) > this.state.demonwolves ?  this.state.werewolves - (Number(evt.target.value) - this.state.demonwolves) : this.state.werewolves + (this.state.demonwolves - Number(evt.target.value)),
-          demonwolves : Number(evt.target.value),
-        })
+          werewolves:
+            Number(evt.target.value) > this.state.demonwolves
+              ? this.state.werewolves -
+                (Number(evt.target.value) - this.state.demonwolves)
+              : this.state.werewolves +
+                (this.state.demonwolves - Number(evt.target.value)),
+          demonwolves: Number(evt.target.value),
+        });
       default:
         return this.setState({
           ...this.state,
@@ -213,8 +262,32 @@ class Index extends React.Component<AppProps, State> {
   };
 
   public calcRemains = (current: number) => {
-    const { players, werewolves, seers, witch, hunter , cupid , whitewolves, demonwolves, protector} = this.state;
-    return players - werewolves - seers - witch - cupid - hunter - whitewolves - demonwolves - protector + current - 1;
+    const {
+      players,
+      werewolves,
+      seers,
+      witch,
+      hunter,
+      cupid,
+      whitewolves,
+      demonwolves,
+      protector,
+      fairy,
+    } = this.state;
+    return (
+      players -
+      werewolves -
+      seers -
+      witch -
+      cupid -
+      hunter -
+      whitewolves -
+      demonwolves -
+      protector -
+      fairy +
+      current -
+      1
+    );
   };
 
   public RoleDialog = () => {
@@ -240,7 +313,12 @@ class Index extends React.Component<AppProps, State> {
                 value={this.state.cupid}
                 onChange={this.handleChange}
               >
-                {NumberMenuItems(0, this.calcRemains(Number.isNaN(this.state.cupid) ? 0 : this.state.cupid))}
+                {NumberMenuItems(
+                  0,
+                  this.calcRemains(
+                    Number.isNaN(this.state.cupid) ? 0 : this.state.cupid
+                  )
+                )}
               </Select>
             </FormControl>
           </form>
@@ -252,7 +330,14 @@ class Index extends React.Component<AppProps, State> {
                 value={this.state.werewolves}
                 onChange={this.handleChange}
               >
-                {NumberMenuItems(0, this.calcRemains(Number.isNaN(this.state.werewolves) ? 0 : this.state.werewolves))}
+                {NumberMenuItems(
+                  0,
+                  this.calcRemains(
+                    Number.isNaN(this.state.werewolves)
+                      ? 0
+                      : this.state.werewolves
+                  )
+                )}
               </Select>
             </FormControl>
             <FormControl className={this.props.classes.formControl}>
@@ -262,7 +347,12 @@ class Index extends React.Component<AppProps, State> {
                 value={this.state.fairy}
                 onChange={this.handleChange}
               >
-                {NumberMenuItems(0, this.calcRemains(Number.isNaN(this.state.fairy) ? 0 : this.state.fairy))}
+                {NumberMenuItems(
+                  0,
+                  this.calcRemains(
+                    Number.isNaN(this.state.fairy) ? 0 : this.state.fairy
+                  )
+                )}
               </Select>
             </FormControl>
           </form>
@@ -306,7 +396,12 @@ class Index extends React.Component<AppProps, State> {
                 value={this.state.hunter}
                 onChange={this.handleChange}
               >
-                {NumberMenuItems(0, this.calcRemains(Number.isNaN(this.state.hunter) ? 0 :this.state.hunter ))}
+                {NumberMenuItems(
+                  0,
+                  this.calcRemains(
+                    Number.isNaN(this.state.hunter) ? 0 : this.state.hunter
+                  )
+                )}
               </Select>
             </FormControl>
           </form>
@@ -390,7 +485,7 @@ class Index extends React.Component<AppProps, State> {
           <Fab
             onClick={this.handleStart}
             component={Link}
-            {...{ to: "/night" } as any}
+            {...({ to: "/night" } as any)}
             variant="extended"
             color="primary"
             size="large"
@@ -408,7 +503,6 @@ const mapStateToProps = (state: AppState) => ({
   game: state.game,
 });
 
-export default connect(
-  mapStateToProps,
-  { updateSetting, initGame }
-)(withRoot(withStyles(styles)(Index)));
+export default connect(mapStateToProps, { updateSetting, initGame })(
+  withRoot(withStyles(styles)(Index))
+);

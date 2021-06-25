@@ -33,12 +33,24 @@ const styles = (theme: Theme) =>
       minWidth: 150,
     },
   });
-
+const roleList = [
+  "cupid",
+  "werewolf",
+  "demonwolves",
+  "whitewolves",
+  "protector",
+  "seer",
+  "hunter",
+  "witch",
+  "fairy",
+  "villager",
+];
 interface Props extends WithStyles<typeof styles> {
   actionPlayer: typeof actionPlayer;
   finishAction: typeof finishAction;
   game: Game;
   player: Player;
+  role: Roles;
 }
 
 interface State {
@@ -159,7 +171,24 @@ class ActionDialog extends React.Component<Props, State> {
   public render() {
     const { classes, player } = this.props;
     const { open } = this.state;
-
+    let line = " ";
+    if (player.role === Roles.cupid) {
+      line = "Cupid chọn cặp đôi đi nào: ";
+    } else if (player.role === Roles.werewolf) {
+      line = "Đêm nay sói muốn cắn ai: ";
+    } else if (player.role === Roles.demonwolves) {
+      line = "Sói trùm muốn nhận người này làm sói không";
+    } else if (player.role === Roles.whitewolves) {
+      line = "Sói trắng muốn cắn con sói nào không";
+    } else if (player.role === Roles.hunter) {
+      line = "Đêm nay thợ săn muốn kéo theo ai :";
+    } else if (player.role === Roles.seer) {
+      line = "Đêm nay tiên tri muốn soi ai :";
+    } else if (player.role === Roles.witch) {
+      line = "Đêm nay người này bị cắn phù thủy muốn cứu không: ";
+    } else if (player.role === Roles.protector) {
+      line = "Đêm nay bảo vệ muốn bảo vệ ai :";
+    }
     return (
       <div className={classes.wrapper}>
         <this.ActionResultDialog />
@@ -170,7 +199,7 @@ class ActionDialog extends React.Component<Props, State> {
           onClick={this.handleClickOpen}
           className={classes.openButton}
         >
-          Action: {player.name}
+          Action: {roleList[player.role]}
         </Button>
         <Dialog
           open={open}
@@ -179,12 +208,24 @@ class ActionDialog extends React.Component<Props, State> {
           aria-labelledby="dialog-title"
           aria-describedby="dialog-description"
         >
-          <DialogTitle id="dialog-title">{player.name}</DialogTitle>
+          <DialogTitle id="dialog-title">
+            {roleList[player.role].toUpperCase()}
+          </DialogTitle>
           <DialogContent>
-            <Typography variant="body1">
-              You are the {Roles[player.role]}
-            </Typography>
-            {player.role !== Roles.villager && <this.PlayerMenuItems />}
+            <Typography variant="body1">{line}</Typography>
+            {player.role !== Roles.villager && player.role !== Roles.cupid && (
+              <this.PlayerMenuItems />
+            )}
+            {player.role === Roles.cupid ? (
+              <div>
+                <Typography variant="body1">Chọn người thứ nhất</Typography>
+                <this.PlayerMenuItems />
+                <Typography variant="body1">Chọn người thứ hai</Typography>
+                <this.PlayerMenuItems />
+              </div>
+            ) : (
+              ""
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleClose} color="primary">
@@ -201,7 +242,6 @@ const mapStateToProps = (state: AppState) => ({
   game: state.game,
 });
 
-export default connect(
-  mapStateToProps,
-  { actionPlayer, finishAction }
-)(withStyles(styles)(ActionDialog));
+export default connect(mapStateToProps, { actionPlayer, finishAction })(
+  withStyles(styles)(ActionDialog)
+);

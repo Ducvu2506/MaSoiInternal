@@ -143,26 +143,45 @@ function majority(ids: number[]) {
 function vote(players: Player[], nextTime: Time) {
   let lastDiedPlayer: Player | null = null;
   let protectedIds: number[] = [];
-
-  let deathId = majority(
-    players.map(
-      player =>
-        (nextTime === Time.night ? player.voteId : player.actionId) || -1
-    )
+  let bitten: number | null = null;
+  let shooted: number | null = null;
+  const changeWolf: boolean = false;
+  const deathId = majority(
+    players.map(player => (nextTime === Time.night ? player.voteId : -1) || -1)
   );
+  console.log(players);
+  console.log(deathId);
 
   for (const player of players) {
-    if (player.role === Roles.witch && player.actionId) {
+    if (player.role === Roles.protector && player.actionId) {
       protectedIds = [...protectedIds, player.actionId];
+    }
+    if (player.role === Roles.werewolf && player.actionId) {
+      bitten = player.actionId;
+    }
+    if (Roles.demonwolves === player.role && player.actionId) {
+      if (player.actionId === bitten) {
+        // logic
+      }
+    }
+    if (Roles.hunter === player.role && player.actionId) {
+      shooted = player.actionId;
     }
   }
 
-  if (deathId) {
+  if (bitten) {
     for (const id of protectedIds) {
-      if (deathId === id) {
-        deathId = null;
+      if (bitten === id) {
+        bitten = null;
         break;
       }
+    }
+    if (changeWolf) {
+      bitten = null;
+      // const bittenPlayer = players.find(x => x.id == player.actionId)
+      // if (bittenPlayer) {
+      //   bittenPlayer.role = Roles.werewolf
+      // }
     }
   }
 
