@@ -63,7 +63,16 @@ class Night extends React.Component<AppProps, State> {
       activeStep: 0,
     };
   }
-
+  roleList = [  'villager',
+    'werewolf',
+    'seer',
+    'witch',
+    'hunter',
+    'whitewolves',
+    'demonwolves',
+    'protector',
+    'cupid'
+  ]
   public handleNext = () =>
     this.setState({ ...this.state, activeStep: this.state.activeStep + 1 });
 
@@ -75,37 +84,43 @@ class Night extends React.Component<AppProps, State> {
   public render() {
     const { classes, game } = this.props;
     const { activeStep } = this.state;
+    let roles = game.players.map(x => {
+      return x.role;
+    });
+    
+    roles = Array.from(new Set(roles))
+    
     let step = 0;
-
+    
     return (
       <div className={classes.root}>
         <Typography variant="h2" gutterBottom={true}>
-          Night
+          Đêm
         </Typography>
         <Typography variant="subtitle1" gutterBottom={true}>
-          Day {game.date.day}
+          Ngày {game.date.day}
         </Typography>
         <Stepper
           className={classes.stepper}
           activeStep={activeStep}
           orientation="vertical"
         >
-          {game.players.map((player, index) => {
-            if (player.alive) {
+          {roles.map((x, index) => {
               const thisStep = step;
               step++;
+              let tempPlayer:any = game.players.find(player => player.role === x)
               return (
-                <Step key={String(player)}>
+                <Step key={String(x)}>
                   <StepLabel
                     className={classes.stepLabel}
                     // tslint:disable-next-line: jsx-no-lambda
                     onClick={() => this.setActiveStep(thisStep)}
                   >
-                    {player.name}
+                    {this.roleList[x]}
                   </StepLabel>
                   <StepContent>
                     <div className={classes.content}>
-                      <ActionDialog player={player} />
+                      <ActionDialog player={tempPlayer} />
                       <Button
                         variant="contained"
                         color="primary"
@@ -119,7 +134,7 @@ class Night extends React.Component<AppProps, State> {
                 </Step>
               );
             }
-          })}
+          )}
         </Stepper>
         <div className={classes.wrapper}>
           <Fab
